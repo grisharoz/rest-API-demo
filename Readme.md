@@ -15,3 +15,8 @@ public object getCoefficient(string attribute) { switch (attribute) { case "numb
 [ { "Type": "number", "Value": "7", "Stake": 50, "Win": True }, { "Type": "color", "Value": "red", "Stake": 100, "Win": True } ]
 
 Почитать иммутабельности в си шарпе.
+
+--- 
+
+1. протестировать
+2. Прочитать про деплой .Net приложения, Прочитать про докер

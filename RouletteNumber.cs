@@ -1,7 +1,7 @@
 public class RouletteNumber
 {
     public int number { get; set; }
-    public bool even { get; set; }
+    public string even { get; set; }
     public string color { get; set; }
     public string row { get; set; }
     public string column { get; set; }
@@ -9,7 +9,7 @@ public class RouletteNumber
     public string sequence { get; set; }
     public List<string> numberSet { get; set; }
 
-    public RouletteNumber(int number, bool even, string color, string row = "",
+    public RouletteNumber(int number, string even, string color, string row = "",
                         string column = "", string rank = "",
                         string sequence = "", List<string>? numberSet = null)
     {

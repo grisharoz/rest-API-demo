@@ -151,7 +151,7 @@ public class SpinController : ControllerBase
             }
             if (bet.Type == "even")
             {
-                List<string> validChoices = ["even", "not even"];
+                List<string> validChoices = ["true", "false"];
 
                 if (!validChoices.Contains(bet.Value))
                 {
@@ -248,6 +248,8 @@ public class SpinController : ControllerBase
             string value = betrequest.Value;
             int stakeAmount = betrequest.Stake;
 
+            user.Balance -= stakeAmount;
+
             if (type == "numberSet")
             {
                 if (roulette.getNumberByKey(rand).getByAttribute(type) is List<string> collectionOfNumbers)
@@ -269,7 +271,6 @@ public class SpinController : ControllerBase
                     }
                     else
                     {
-                        user.Balance -= stakeAmount;
                         wins.Add(new BetAndWinDTO{
                             Type = type,
                             Value = value,
@@ -284,7 +285,6 @@ public class SpinController : ControllerBase
             {
                 if (roulette.getNumberByKey(rand).getByAttribute(type).ToString() == value)
                 {
-
                     user.Balance += stakeAmount * getCoefficient(type);
                     wins.Add(new BetAndWinDTO{
                             Type = type,
@@ -297,7 +297,6 @@ public class SpinController : ControllerBase
                 }
                 else
                 {
-                    user.Balance -= stakeAmount;
                     wins.Add(new BetAndWinDTO{
                         Type = type,
                         Value = value,
