@@ -41,10 +41,19 @@ public class BetDTO
     [Required]
     [AllowedValues("number", "color", "rank", "row", "numberSet", "column", "sequence", "even",
         ErrorMessage = "This type is incorect. Possible types: number, color, rank, row, numberSet, column, sequence, even")]
-    public string Type { get; set; }
+    public string Type{get;set;}
     [Required]
-    public string Value { get; set; }
+    public string Value{get;set;}
 
     [Required]
-    public int Stake { get; set; }
+    public int Stake{get;set;}
+
+}
+
+public class BetAndWinDTO:BetDTO
+{
+    [Required]
+    public bool Win {get; set;}
+    [Required]
+    public string Rand {get; set;}
 }

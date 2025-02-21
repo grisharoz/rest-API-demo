@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using TodoApi.Models;
 
 namespace TodoApi.Controllers;
@@ -99,7 +100,7 @@ public class SpinController : ControllerBase
     [HttpPut("spin")]
     // public async Task<IActionResult> PutUser(long id, int bet)
     // bet-тип ставки(чётное/нечётное); input=чётное; bet=20$;
-    public async Task<IActionResult> PutUser(long id, [FromBody] List<BetDTO> bets)
+    public async Task<ActionResult<List<BetAndWinDTO>>> PutUser(uint id, [FromBody] List<BetDTO> bets)
     {
 
         if (bets == null || !bets.Any())
@@ -211,7 +212,7 @@ public class SpinController : ControllerBase
             }
         }
 
-        Spin(bets, user);
+        List<BetAndWinDTO> res = Spin(bets, user);
 
         try
         {
@@ -222,16 +223,17 @@ public class SpinController : ControllerBase
             return NotFound();
         }
 
-        return Ok(new { message = "Пользователь успешно обновлён!" });
+        return Ok(res);
 
     }
 
-    public static void Spin(List<BetDTO> bets, User user)
-    {
 
+    public static List<BetAndWinDTO> Spin([FromBody] List<BetDTO> bets, User user)
+    {
         var roulette = new ListOfRoulette();
         Random random = new Random();
         string rand = random.Next(roulette.Numbers.Count()).ToString();
+        List<BetAndWinDTO> wins = new List<BetAndWinDTO>(); 
 
         Dictionary<string, int> coefficients = new Dictionary<string, int>(){
             {"2",18},
@@ -240,13 +242,11 @@ public class SpinController : ControllerBase
             {"6",6},
         };
 
-        Console.WriteLine($"На рулетке выпало: {rand}");
-
-        bets.ForEach(delegate (BetDTO bet)
+        bets.ForEach(delegate (BetDTO betrequest)
         {
-            string type = bet.Type;
-            string value = bet.Value;
-            int stakeAmount = bet.Stake;
+            string type = betrequest.Type;
+            string value = betrequest.Value;
+            int stakeAmount = betrequest.Stake;
 
             if (type == "numberSet")
             {
@@ -258,11 +258,25 @@ public class SpinController : ControllerBase
                         string collectionOfNumbersCount = value.Split("/").Length.ToString();
 
                         user.Balance += stakeAmount * coefficients[collectionOfNumbersCount];
-                        Console.WriteLine($"Поздравляю! Ты выиграл {stakeAmount * coefficients[collectionOfNumbersCount]} долларов, поставив на {value}");
+                        wins.Add(new BetAndWinDTO{
+                            Type = type,
+                            Value = value,
+                            Stake = stakeAmount,
+                            Win = true,
+                            Rand = rand
+                        });
+
                     }
                     else
                     {
-                        Console.WriteLine($"К сожалению, ты проиграл {stakeAmount} долларов, поставив на {value}");
+                        user.Balance -= stakeAmount;
+                        wins.Add(new BetAndWinDTO{
+                            Type = type,
+                            Value = value,
+                            Stake = stakeAmount,
+                            Win = false,
+                            Rand = rand
+                        });
                     }
                 }
             }
@@ -272,19 +286,32 @@ public class SpinController : ControllerBase
                 {
 
                     user.Balance += stakeAmount * getCoefficient(type);
-                    Console.WriteLine($"Поздравляю! Ты выиграл {stakeAmount * getCoefficient(type)} долларов, поставив на {value}");
-                    Console.WriteLine($"Твой баланс: {user.Balance}$");
+                    wins.Add(new BetAndWinDTO{
+                            Type = type,
+                            Value = value,
+                            Stake = stakeAmount,
+                            Win = true,
+                            Rand = rand
+                        });
+
                 }
                 else
                 {
                     user.Balance -= stakeAmount;
-                    Console.WriteLine($"К сожалению, ты проиграл {stakeAmount} долларов, поставив на {value}");
-                    Console.WriteLine($"Твой баланс: {user.Balance}$");
+                    wins.Add(new BetAndWinDTO{
+                        Type = type,
+                        Value = value,
+                        Stake = stakeAmount,
+                        Win = false,
+                        Rand = rand
+                    });
+
                 }
             }
 
         });
 
-
+        return wins;
     }
+
 }
