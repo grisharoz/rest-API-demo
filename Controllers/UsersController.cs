@@ -32,7 +32,7 @@ public class UsersController : ControllerBase
     // GET: api/User/5
     // <snippet_GetByID>
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserDTO>> GetUser(long id)
+    public async Task<ActionResult<UserDTO>> GetUser(uint id)
     {
         var user = await _context.Users.FindAsync(id);
 
@@ -49,7 +49,7 @@ public class UsersController : ControllerBase
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     // <snippet_Update>
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutUser(long id, UserDTO userDTO)
+    public async Task<IActionResult> PutUser(uint id, UserDTO userDTO)
     {
         if (id != userDTO.Id)
         {
@@ -106,7 +106,7 @@ public class UsersController : ControllerBase
 
     // DELETE: api/TodoItems/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTodoItem(long id)
+    public async Task<IActionResult> DeleteTodoItem(uint id)
     {
         var todoItem = await _context.Users.FindAsync(id);
         if (todoItem == null)
@@ -120,7 +120,7 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
-    public static bool UserExists(long id, UsersContext _context)
+    public static bool UserExists(uint id, UsersContext _context)
     {
         return _context.Users.Any(e => e.Id == id);
     }

@@ -21,7 +21,7 @@ public class BalanceController : ControllerBase
     // GET: api/User/5
     // <snippet_GetByID>
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(long id)
+    public async Task<ActionResult<User>> GetUser(uint id)
     {
         var user = await _context.Users.FindAsync(id);
 
