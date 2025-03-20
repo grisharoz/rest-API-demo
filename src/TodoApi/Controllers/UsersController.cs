@@ -83,13 +83,15 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<UserDTO>> PostUser(UserDTO userDTO)
     {
-        System.Diagnostics.Debug.WriteLine("тест");
-        if (UserExists(userDTO.Id, _context)) {
-            return Conflict("User already exists.");
+        // Проверяем, что ID передан и его еще нет в базе
+        if (userDTO.Id == 0 || UserExists(userDTO.Id, _context))
+        {
+            return Conflict("User already exists or invalid ID.");
         }
 
         var user = new User
         {
+            Id = userDTO.Id,  // Используем переданный ID
             Balance = InitialBalance,
             Name = userDTO.Name
         };
@@ -102,6 +104,7 @@ public class UsersController : ControllerBase
             new { id = user.Id },
             UserToDTO(user));
     }
+
     // </snippet_Create>
 
     // DELETE: api/TodoItems/5
