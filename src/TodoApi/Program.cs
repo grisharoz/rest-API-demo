@@ -24,7 +24,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options => {
     options.AddDefaultPolicy(policy => {
-        policy.WithOrigins("http://localhost:3000", "https://roulette-simulator-iojb.vercel.app");
+        policy.WithOrigins("http://localhost:3000", "https://192.168.0.14:3000");
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
     });
