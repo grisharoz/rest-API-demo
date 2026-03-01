@@ -1,17 +1,25 @@
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Kestrel to use self-signed certificate
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ListenAnyIP(5004);  // HTTP
-    serverOptions.ListenAnyIP(7024, listenOptions =>
+// Контейнер работает только по HTTP (5004)
+
+builder.WebHost.ConfigureKestrel(serverOptions => {
+    serverOptions.ListenAnyIP(5004); // HTTP всегда
+
+    // HTTPS только если сертификаты существуют (Docker/prod)
+    var certPath = "/https/origin.crt";
+    var keyPath = "/https/origin.key";
+    
+    if (File.Exists(certPath) && File.Exists(keyPath))
     {
-        // Use a self-signed certificate or load from environment
-        listenOptions.UseHttps();  // This will use the certificate specified in environment variables
-    });
+        serverOptions.ListenAnyIP(443, listenOptions => {
+            var cert = X509Certificate2.CreateFromPemFile(certPath, keyPath);
+            listenOptions.UseHttps(cert);
+        });
+    }
 });
 
 // Add services to the container.
@@ -22,9 +30,16 @@ builder.Services.AddDbContext<UsersContext>(opt =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors(options => {
-    options.AddDefaultPolicy(policy => {
-        policy.WithOrigins("http://localhost:3000", "https://192.168.0.14:3000");
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins(
+            "http://localhost:3000",
+            "https://localhost:3000",
+            "https://roulette-simulator-iojb.vercel.app",
+            "https://valuebargains.store"
+        );
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
     });
@@ -39,7 +54,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
 
 app.UseAuthorization();
