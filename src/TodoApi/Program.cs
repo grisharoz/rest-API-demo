@@ -37,6 +37,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
             "http://localhost:3000",
             "https://localhost:3000",
+            "http://192.168.0.16:3000",
             "https://roulette-simulator-iojb.vercel.app",
             "https://valuebargains.store"
         );

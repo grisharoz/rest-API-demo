@@ -99,7 +99,7 @@ public class SpinController : ControllerBase
     [HttpPut("spin")]
     // public async Task<IActionResult> PutUser(long id, int bet)
     // bet-тип ставки(чётное/нечётное); input=чётное; bet=20$;
-    public async Task<ActionResult<List<BetAndWinDTO>>> PutUser(uint id, [FromBody] List<BetDTO> bets)
+    public async Task<ActionResult<List<BetAndWinDTO>>> PutUser(ulong id, [FromBody] List<BetDTO> bets)
     {
 
         if (bets == null || !bets.Any())
